@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
+import 'package:movie_db_bloc/Data/model/user_table.dart';
 import 'package:movie_db_bloc/Screens/login_signup/my_text_field.dart';
-import 'package:movie_db_bloc/model/user_table.dart';
 
 import 'login.dart';
 

@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:http/http.dart' as http;
+import 'package:movie_db_bloc/Data/my_tmdb_api/keys.dart';
 
-import 'package:movie_db_bloc/my_tmdb_api/keys.dart';
 part 'movie_event.dart';
 part 'movie_state.dart';
 

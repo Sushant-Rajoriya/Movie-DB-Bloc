@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
+import 'package:movie_db_bloc/Data/model/user_table.dart';
 import 'package:movie_db_bloc/Screens/home_screen/home_screen.dart';
 import 'package:movie_db_bloc/Screens/login_signup/signup.dart';
-import 'package:movie_db_bloc/model/user_table.dart';
 
 import 'my_text_field.dart';
 
