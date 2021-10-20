@@ -1,10 +1,9 @@
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hive/hive.dart';
-import 'package:movie_db_bloc/Data/model/user_table.dart';
+import 'package:movie_db_bloc/Blocs/auth_cubit/auth_cubit.dart';
+import 'package:movie_db_bloc/Blocs/fatch_movie_cubit/fatch_movie_cubit.dart';
 import 'package:movie_db_bloc/Screens/home_screen/home_screen.dart';
 import 'package:movie_db_bloc/Screens/login_signup/signup.dart';
 
@@ -18,22 +17,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  bool isError = false;
-  HashMap<String, String> hs = HashMap<String, String>();
-  Future<void> loadList() async {
-    var box = await Hive.openBox<UserTable>('userTable');
-
-    for (int i = 0; i < box.length; i++) {
-      hs.putIfAbsent(box.getAt(i)!.userName, () => box.getAt(i)!.password);
-    }
-  }
-
-  @override
-  void initState() {
-    loadList();
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     String userName = "";
@@ -54,11 +37,31 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              Text(
-                isError ? "Error UserName Or Password Wrong" : "Welcome Back !",
-                style: GoogleFonts.lato(
-                  color: isError ? Colors.red : Colors.black,
-                  textStyle: const TextStyle(letterSpacing: .5, fontSize: 35),
+              BlocListener<AuthCubit, AuthState>(
+                listener: (context, state) {
+                  if (state.hasData) {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (_) => BlocProvider.value(
+                              value: BlocProvider.of<FatchMovieCubit>(context),
+                              child: HomeScreen(
+                                userName: userName,
+                              ),
+                            )));
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Username or Password Worng '),
+                        duration: Duration(microseconds: 10000),
+                      ),
+                    );
+                  }
+                },
+                child: Text(
+                  "Welcome Back !",
+                  style: GoogleFonts.lato(
+                    color: Colors.black,
+                    textStyle: const TextStyle(letterSpacing: .5, fontSize: 35),
+                  ),
                 ),
               ),
               const SizedBox(
@@ -105,22 +108,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             GestureDetector(
                               onTap: () {
-                                if (hs.containsKey(userName)) {
-                                  if (hs[userName] == password) {
-                                    setState(() {
-                                      isError = false;
-                                      Navigator.of(context)
-                                          .push(MaterialPageRoute(
-                                              builder: (context) => HomeScreen(
-                                                    userName: userName,
-                                                  )));
-                                    });
-                                  }
-                                } else {
-                                  setState(() {
-                                    isError = true;
-                                  });
-                                }
+                                BlocProvider.of<AuthCubit>(context)
+                                    .login(userName, password);
                               },
                               child: const CircleAvatar(
                                 backgroundColor: Colors.white,
@@ -141,10 +130,13 @@ class _LoginScreenState extends State<LoginScreen> {
               GestureDetector(
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const SignupScreen()));
+                      builder: (_) => BlocProvider.value(
+                            value: BlocProvider.of<AuthCubit>(context),
+                            child: const SignupScreen(),
+                          )));
                 },
                 child: Text(
-                  "Sing Up",
+                  "Sign Up",
                   style: GoogleFonts.lato(
                     color: Colors.blueAccent,
                     textStyle: const TextStyle(letterSpacing: .5, fontSize: 20),

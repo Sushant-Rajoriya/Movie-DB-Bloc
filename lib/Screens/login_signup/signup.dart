@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hive/hive.dart';
-import 'package:movie_db_bloc/Data/model/user_table.dart';
+import 'package:movie_db_bloc/Blocs/auth_cubit/auth_cubit.dart';
 import 'package:movie_db_bloc/Screens/login_signup/my_text_field.dart';
 
 import 'login.dart';
@@ -27,7 +27,19 @@ class _SignupScreenState extends State<SignupScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(height: 40),
+              BlocListener<AuthCubit, AuthState>(
+                listener: (context, state) {
+                  if (state.saveData) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Save Data in Database !'),
+                        duration: Duration(microseconds: 600),
+                      ),
+                    );
+                  }
+                },
+                child: const SizedBox(height: 40),
+              ),
               const CircleAvatar(
                 backgroundColor: Colors.blueAccent,
                 radius: 30,
@@ -104,7 +116,8 @@ class _SignupScreenState extends State<SignupScreen> {
                             ),
                             GestureDetector(
                               onTap: () {
-                                addData(userName, password, age, email);
+                                BlocProvider.of<AuthCubit>(context).singUp(
+                                    userName, password, int.parse(age), email);
 
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) => const LoginScreen()));
@@ -143,16 +156,5 @@ class _SignupScreenState extends State<SignupScreen> {
         ),
       ),
     );
-  }
-
-  Future<void> addData(
-      String userName, String password, String age, String email) async {
-    var box = await Hive.openBox<UserTable>('userTable');
-    box.add(UserTable(
-      userName,
-      password,
-      int.parse(age),
-      email,
-    ));
   }
 }

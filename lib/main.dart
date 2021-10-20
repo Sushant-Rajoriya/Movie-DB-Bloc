@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:movie_db_bloc/Blocs/auth_cubit/auth_cubit.dart';
 import 'package:movie_db_bloc/Blocs/fatch_movie_cubit/fatch_movie_cubit.dart';
 import 'package:movie_db_bloc/Blocs/search_movie_cubit/search_movie_cubit.dart';
 import 'package:movie_db_bloc/Data/model/user_table.dart';
@@ -30,6 +31,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => SearchMovieCubit(),
+        ),
+        BlocProvider(
+          create: (context) => AuthCubit(),
         ),
       ],
       child: MaterialApp(
